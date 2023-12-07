@@ -6,7 +6,7 @@
 
 #ifndef FB_ARC_SET_GRAPH_UTIL_H
 #define FB_ARC_SET_GRAPH_UTIL_H
-#include <stdlib.h>
+#include <stdio.h>
 
 // u -> v
 typedef struct edge {
@@ -14,21 +14,23 @@ typedef struct edge {
     int v;
 } edge;
 
-typedef struct edge_list {
+typedef struct graph {
     size_t size_e;
     size_t size_v;
     int capacity_e;
     int capacity_v;
     edge *edges;
     int *vertices;
-} edge_list;
+} graph;
 
-edge_list edge_list_constr(void);
+edge edge_constr(int u, int v);
 
-void edge_list_destr(edge_list *el);
+graph graph_constr(void);
 
-void edge_list_add(edge_list *el, edge *e);
+void graph_destr(graph *g);
 
-void error_exit(char *message);
+void graph_add(graph *g, edge *e);
+
+int graph_contains_vertex(graph *g, int vertex);
 
 #endif //FB_ARC_SET_GRAPH_UTIL_H
