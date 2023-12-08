@@ -56,3 +56,13 @@ graph *circular_buffer_read(circular_buffer *cb) {
     return g;
 }
 
+void circular_buffer_destr(circular_buffer *cb) {
+    sem_close(cb->sem_free);
+    sem_close(cb->sem_used);
+    sem_close(cb->sem_mutex);
+
+    sem_unlink(SEM_FREE);
+    sem_unlink(SEM_USED);
+    sem_unlink(SEM_MUTEX);
+}
+
