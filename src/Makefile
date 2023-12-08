@@ -1,11 +1,11 @@
 CC		= gcc
 DEFS	= -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_SVID_SOURCE -D_POSIX_C_SOURCE=200809L
-CFLAGS	= -std=c99 -pedantic -Wall -g $(DEFS)
+CFLAGS	= -std=c99 -pedantic -Wall $(DEFS) -g
 TARN	= 2-fb_arc_set-todorovic.tar.gz
 
 .PHONY: all clean
 
-all: supervisor #generator
+all: supervisor generator
 
 supervisor: supervisor.o
 	@$(CC) supervisor.o -o supervisor
@@ -13,11 +13,14 @@ supervisor: supervisor.o
 supervisor.o: supervisor.c
 	@$(CC) $(CFLAGS) -c supervisor.c
 
-generator: generator.o
-	@$(GCC) generator.o -o generator
+generator: generator.o graph_util.o
+	@$(CC) -o generator generator.o graph_util.o
 
-generator.o: generator.c
-	@$(GCC) $(CFLAGS) -c generator.c
+generator.o: generator.c graph_util.h
+	@$(CC) $(CFLAGS) -c -o generator.o generator.c
+
+graph_util.o: graph_util.c graph_util.h
+	@$(CC) $(CFLAGS) -c -o graph_util.o graph_util.c
 
 clean:
 	@rm -rf *.o supervisor generator $(TARN)
