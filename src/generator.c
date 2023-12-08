@@ -14,17 +14,6 @@
 const char *program_name;
 
 /**
- * @brief Prints an error message to stderr, and terminates the program
- * with EXIT_FAILURE.
- *
- * @param message to be printed
- */
-void error_exit(char *message) {
-    fprintf(stderr, "%s: \n", message);
-    exit(EXIT_FAILURE);
-}
-
-/**
  * @brief Prints a usage message to stderr, and terminates the program
  * with EXIT_FAILURE.
  */
@@ -47,9 +36,9 @@ static void swap(int **arr, int i, int j) {
 }
 
 /**
+ * @brief This function creates a random permutation of the vertices array in a graph g.
  *
- * @param target
- * @param vertices_s
+ * @param g the specified graph
  */
 static void random_vertices_permutation(graph *g) {
     for (int i = g->size_v - 1; i >= 0; --i) {
@@ -59,10 +48,13 @@ static void random_vertices_permutation(graph *g) {
 }
 
 /**
+ * @brief Calculates a solution for the feedback arc set problem and adds it to a feedback arc graph
  *
+ * @details This function iterates through the vertex list of graph g, which is a random
+ * permutation created before calling this function.
  *
- * @param fb
- * @param g
+ * @param fb feedback arc graph, where edges are added to
+ * @param g graph from which vertices and edges are read
  */
 static void add_fb_set_to_graph(graph *fb, graph *g) {
     for (int i = g->size_v - 1; i > 0; i--) {
@@ -75,6 +67,15 @@ static void add_fb_set_to_graph(graph *fb, graph *g) {
     }
 }
 
+/**
+ * @brief The main logic of this generator program, receiving a graphs edges as input,
+ * calculating possible solutions for the minimum feedback arc set problem, and writing
+ * these solutions to the circular buffer.
+ *
+ * @param argc argument counter
+ * @param argv argument values
+ * @return EXIT_SUCCESS on successful termination, otherwise EXIT_FAILURE
+ */
 int main(int argc, char **argv) {
 
     if (argc < 2) {
