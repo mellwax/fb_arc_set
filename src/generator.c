@@ -4,10 +4,11 @@
  * @date 28.11.2023
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <errno.h>
 #include "graph_util.h"
+#include "circular_buffer.h"
 
 /** the program name */
 const char *program_name;
@@ -27,7 +28,7 @@ void error_exit(char *message) {
  * @brief Prints a usage message to stderr, and terminates the program
  * with EXIT_FAILURE.
  */
-void usage(void) {
+static void usage(void) {
     fprintf(stderr, "usage: %s EDGE1 EDGE2 ...\n", program_name);
     exit(EXIT_FAILURE);
 }
@@ -39,7 +40,7 @@ void usage(void) {
  * @param i first index
  * @param j second index
  */
-void swap(int **arr, int i, int j) {
+static void swap(int **arr, int i, int j) {
     int tmp = (*arr)[i];
     (*arr)[i] = (*arr)[j];
     (*arr)[j] = tmp;
@@ -50,13 +51,10 @@ void swap(int **arr, int i, int j) {
  * @param target
  * @param vertices_s
  */
-void random_vertices_permutation(int **target, int vertices_s) {
-    time_t t;
-    srand((unsigned) time (&t));
-
-    for (int i = 0; i < vertices_s - 2; i++) {
-        int j = rand() % vertices_s;
-        swap(target, i, j);
+static void random_vertices_permutation(graph *g) {
+    for (int i = g->size_v - 1; i >= 0; --i) {
+        int j = rand() % (i + 1);
+        swap(&g->vertices, i, j);
     }
 }
 
@@ -66,7 +64,7 @@ void random_vertices_permutation(int **target, int vertices_s) {
  * @param fb
  * @param g
  */
-void add_fb_set_to_graph(graph *fb, graph *g) {
+static void add_fb_set_to_graph(graph *fb, graph *g) {
     for (int i = g->size_v - 1; i > 0; i--) {
         for (int j = i - 1; j >= 0; j--) {
             edge e = edge_constr(g->vertices[i], g->vertices[j]);
@@ -85,6 +83,8 @@ int main(int argc, char **argv) {
 
     program_name = argv[0];
 
+    srand((unsigned) time (NULL));
+
     graph g = graph_constr();
 
     for (int i = 1; i < argc; i++) {
@@ -96,20 +96,20 @@ int main(int argc, char **argv) {
         graph_add(&g, &e);
     }
 
-    for (int i = 0; i < 3; i++) {
-        random_vertices_permutation(&g.vertices, g.size_v);
+    circular_buffer *cb = circular_buffer_setup(0);
 
-        graph fb = graph_constr();
-
-        add_fb_set_to_graph(&fb, &g);
-
-        fprintf(stdout, " g: ");
-        graph_print(&g, stdout);
-        fprintf(stdout, "fb: ");
-        graph_print(&fb, stdout);
-
-        graph_destr(&fb);
+    while (cb->terminate == 0) {
+        random_vertices_permutation(&g);
+        graph fb_arc_set = graph_constr();
+        add_fb_set_to_graph(&fb_arc_set, &g);
+        if (fb_arc_set.size_e <= MAX_EDGES) {
+            circular_buffer_write(cb, &fb_arc_set);
+        }
     }
+
+
+    circular_buffer_destr(cb, 0);
+
     graph_destr(&g);
     return EXIT_SUCCESS;
 }

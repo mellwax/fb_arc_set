@@ -2,10 +2,13 @@
  * @file graph_util.h
  * @author Kristijan Todorovic, [e11806442(at)student.tuwien.ac.at]
  * @date 03.12.2023
+ *
+ * @brief the header file for a graph structure and graph utility functions implemented by @file graph_util.c
  */
 
 #ifndef FB_ARC_SET_GRAPH_UTIL_H
 #define FB_ARC_SET_GRAPH_UTIL_H
+
 #include <stdio.h>
 
 /**

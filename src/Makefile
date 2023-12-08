@@ -7,20 +7,23 @@ TARN	= 2-fb_arc_set-todorovic.tar.gz
 
 all: supervisor generator
 
-supervisor: supervisor.o
-	@$(CC) supervisor.o -o supervisor
+supervisor: supervisor.o graph_util.o circular_buffer.o
+	@$(CC) -o supervisor supervisor.o graph_util.o circular_buffer.o #-lrt -pthread
 
-supervisor.o: supervisor.c
-	@$(CC) $(CFLAGS) -c supervisor.c
+supervisor.o: supervisor.c graph_util.h circular_buffer.h
+	@$(CC) $(CFLAGS) -c -o supervisor.o supervisor.c
 
-generator: generator.o graph_util.o
-	@$(CC) -o generator generator.o graph_util.o
+generator: generator.o graph_util.o circular_buffer.o
+	@$(CC) -o generator generator.o graph_util.o circular_buffer.o #-lrt -pthread
 
-generator.o: generator.c graph_util.h
+generator.o: generator.c graph_util.h circular_buffer.h
 	@$(CC) $(CFLAGS) -c -o generator.o generator.c
 
 graph_util.o: graph_util.c graph_util.h
 	@$(CC) $(CFLAGS) -c -o graph_util.o graph_util.c
+
+circular_buffer.o: circular_buffer.c circular_buffer.h
+	@$(CC) $(CFLAGS) -c -o circular_buffer.o circular_buffer.c
 
 clean:
 	@rm -rf *.o supervisor generator $(TARN)
