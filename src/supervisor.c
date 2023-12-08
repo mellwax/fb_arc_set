@@ -1,6 +1,6 @@
 /**
  * @file supervisor.c
- * @author Kristijan Todorovic <e11806442@student.tuwien.ac.at>
+ * @author Kristijan Todorovic, [e11806442(at)student.tuwien.ac.at]
  * @date 28.11.2023
  */
 
@@ -9,19 +9,38 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <errno.h>
+#include <limits.h>
 
-char *program_name;
+/** the program name */
+const char *program_name;
 
-void error_exit(char *message) {
+/**
+ * @brief Prints an error message to stderr, and terminates the program
+ * with EXIT_FAILURE.
+ *
+ * @param message to be printed
+ */
+void error_and_exit(char *message) {
     fprintf(stderr, "%s: \n", message);
     exit(EXIT_FAILURE);
 }
 
+/**
+ * @brief Prints a usage message to stderr, and terminates the program
+ * with EXIT_FAILURE.
+ */
 void usage(void) {
     fprintf(stderr, "usage: %s [-n limit] [-w delay] [-p]\n", program_name);
     exit(EXIT_FAILURE);
 }
 
+/**
+ *
+ * @param argc
+ * @param argv
+ * @param limit
+ * @param delay
+ */
 void parse_args(int argc, char *argv[], int *limit, int *delay) {
 
     int option_index;
@@ -56,16 +75,16 @@ void parse_args(int argc, char *argv[], int *limit, int *delay) {
                 usage();
                 break;
             default:
-                error_exit("Unknown error while parsing arguments");
+                error_and_exit("Unknown error while parsing arguments");
                 break;
         }
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char **argv) {
     program_name = argv[0];
-    int limit;
-    int delay;
+    int limit = INT_MAX;
+    int delay = 0;
 
     parse_args(argc, argv, &limit, &delay);
 
