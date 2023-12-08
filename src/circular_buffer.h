@@ -32,5 +32,7 @@ void circular_buffer_write(circular_buffer *cb, graph *g);
 
 graph *circular_buffer_read(circular_buffer *cb);
 
+void circular_buffer_destr(circular_buffer *cb);
+
 #endif  //CIRCULAR_BUFFER_H
 
